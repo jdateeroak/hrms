@@ -1,0 +1,30 @@
+= render 'shared/form_error', object: @vacancy
+
+= simple_form_for @vacancy, html: { class: 'form' } do |f|
+  .form-group
+    label.control-label Status:
+    = f.input :status,
+        collection: Vacancy::STATUSES,
+        label: false,
+        include_blank: true,
+        input_html: { class: 'select form-control' }
+  .form-group
+    label.control-label
+      | Project
+    = f.input :project, placeholder: 'Project name', label: false, class: 'input form-control'
+  .form-group
+    label.control-label
+      | Role
+    = f.input :role, placeholder: 'Senior Lolcode Architect', label: false, class: 'input form-control'
+  .form-group
+    label.control-label
+      | Description
+    = f.input :description, as: :text, placeholder: 'About the project and brief description of daily tasks', label: false, input_html: { rows: 3 }
+  .form-group
+    label.control-label
+      | Vacancy Tag
+    = f.input :tag, placeholder: 'bo-senior-2016', label: false, class: 'input form-control'
+  .form-bordered
+    .form-group.form-actions
+      .text-center
+        = f.button :submit, (@vacancy.new_record? ? 'Create Vacancy' : 'Update Vacancy'), class: 'btn btn-success'

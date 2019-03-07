@@ -1,0 +1,22 @@
+h2.title Employees (Simple)
+
+table.table.pretty-table
+  thead
+    th Photo
+    th Name
+    th Skills
+  tbody
+    - @people.each_with_index do |person, index|
+      tr
+        td
+          - if person.photo.present?
+            img src="#{Refile.attachment_url(person, :photo, :fit, 200, 200, format: 'jpg')}"
+          - else
+            a href="#{edit_person_path(person)}"
+              i.fa.fa-pencil
+        td
+          a href="#{edit_person_path(person)}"
+            = person.name
+        td
+          = person.skills
+

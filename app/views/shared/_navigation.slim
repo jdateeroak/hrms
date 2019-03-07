@@ -1,0 +1,66 @@
+- if current_user
+  .logo
+    a href="/"
+      | HRMS
+
+  ul.navigation-links
+    li.divider
+    li.item role="presentation" class="#{active_class('/people') unless active_class(employees_path).present?}"
+      a href="#{people_path}"
+        i.fa.fa-users
+        | &nbsp; People
+    li.item role="presentation" class="#{active_class(employees_path)}"
+      a href="#{people_path(page: { limit: 10000, offset: 0 }, q: { status_in: Person::EMPLOYEE_STATUSES, sorts: ['status', 'name'] })}"
+        i.fa.fa-users
+        | &nbsp; Employees
+    li.item class="#{active_class('/reports/current_employees_table')}"
+      a href="#{current_employees_table_reports_path}"
+        i.fa
+          | &nbsp;&nbsp;&nbsp; Current
+    li.item class="#{active_class('/reports/contractors_table')}"
+      a href="#{contractors_table_reports_path}"
+        i.fa
+          | &nbsp;&nbsp;&nbsp; Contractors
+    li.item class="#{active_class('/dayoffs/employees')}"
+      a href="#{employees_dayoffs_path}"
+        i.fa
+          | &nbsp;&nbsp;&nbsp; Days off
+    li.item class="#{active_class('/expenses')}"
+      a href="#{expenses_path}"
+        i.fa
+          | &nbsp;&nbsp;&nbsp; Expenses
+    li.item role="presentation" class="#{active_class('/vacancies')}"
+      a href="#{vacancies_path(q: { status_eq: 'open' })}"
+        i.fa.fa-tags
+        | &nbsp; Vacancies
+    li.item role="presentation" class="#{active_class('/action_points')}"
+      a href="#{action_points_path}"
+        i.fa.fa-tags
+        | &nbsp; Interviews
+    li.item role="presentation" class="#{active_class('/tags')}"
+      a href="#{tags_path}"
+        i.fa.fa-tags
+        | &nbsp; Tags
+    li.item role="presentation" class="#{active_class('/dayoffs', exclude_str: 'dayoffs/employees')}"
+      a href="#{dayoffs_path}"
+        i.fa.fa-tags
+        | &nbsp; Days off
+    li.item role="presentation" class="#{active_class('/projects')}"
+      a href="#{projects_path}"
+        i.fa.fa-tags
+        | &nbsp; Projects
+    li.item role="presentation" class="#{active_class('/reports')}"
+      a href="/reports"
+        i.fa.fa-tags
+        | &nbsp; Reports
+    li.divider
+    - if current_user.has_access_to_users?
+      li.item role="presentation" class="#{active_class('/users')}"
+        a href="#{users_path}"
+          i.fa.fa-users
+          | &nbsp; Users
+    - if current_user.has_access_to_events?
+      li.item role="presentation" class="#{active_class('/events')}"
+        a href="#{events_path}"
+          i.fa.fa-paw
+          | &nbsp; Events

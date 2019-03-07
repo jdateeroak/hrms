@@ -1,0 +1,77 @@
+- if @people.empty?
+  span class='js-page-last'
+
+- @people.each_with_index do |record, index|
+  tr class=('js-page-last' if (index == @people.size - 1) && last_page?(@people))
+    td
+      strong
+        = link_to record.name.titleize, person_path(record)
+      | &nbsp;
+      a href="#{edit_person_path(record)}"
+        i.fa.fa-pencil
+      - if record.linkedin.blank? && record.attachments.empty?
+        br
+        a.btn.btn-xs.btn-danger href="#{edit_person_path(record)}"
+          | Linkedin / CV missing
+    td
+      - if record.primary_tech.present?
+        = link_to record.primary_tech, people_path(q: { primary_tech_eq: record.primary_tech })
+    td
+      div style="background-color: #{PERSON_STATUS_COLORS[record.status]};"
+        = link_to (record.status.presence || 'n/a'), people_path(q: {status_eq: record.status}), { style: 'color: black' }
+      - if record.start_date.present?
+        | Start:&nbsp;
+        = record.start_date.strftime(t(:datetime_full)).gsub('00:00, ', '')
+        br
+      - if record.finish_date.present?
+        | Finish:&nbsp;
+        = record.finish_date.strftime(t(:datetime_full)).gsub('00:00, ', '')
+        br
+    td
+      - if (record.action_points_count || 0) > 0
+        | Upcoming Actions:
+        br
+        - record.action_points.order(perform_on: :asc).each do |action_point|
+          - next if action_point.is_completed
+          a href="#{edit_action_point_path(action_point)}" #{action_point.perform_on.strftime(t(:datetime_full)).gsub('00:00, ', '')}
+          | &nbsp;
+          = with_newlines(action_point.value)
+          br
+
+      - if (record.notes_count || 0) > 0
+        | Latest notes:
+        br
+        - record.notes.accessible_by(current_ability).order(updated_at: :desc).each do |note|
+          = note.created_at.strftime(t(:day))
+          | &nbsp;
+          - if !note.type.in?(Note::FINANCE_TYPES) || (note.type.in?(Note::FINANCE_TYPES) && current_user.has_access_to_finances?)
+            a href="#{edit_note_path(note)}" #{note.type}
+            ' : #{with_newlines(truncate(note.value, length: 300, escape: false))}
+          - else
+            = "Content of this note is not available (#{note.type})"
+          br
+      = link_to '+ Note', new_note_path(note: { person_id: record.id })
+      br
+      = link_to '+ Action', new_action_point_path(action_point: { person_id: record.id })
+    td
+      - if (record.attachments_count || 0) > 0
+        | Attachments:&nbsp;
+        br
+        - record.attachments.each do |attachment|
+          = link_to (attachment.name.present? ? attachment.name : attachment.file_filename), Refile.attachment_url(attachment, :file)
+          br
+      - if record.city.present?
+        ' City:
+        = link_to record.city, people_path(q: { city_eq: record.city })
+        br
+      - if record.linkedin.present?
+        a target="_blank" href="#{record.linkedin_value}" LinkedIn
+        br
+      - if record.github.present?
+        a target="_blank" href="#{record.github_value}" Github
+        br
+      - unless record.tag_list.empty?
+        ' Tags:&nbsp;
+        - record.tag_list.each do |tag|
+          = link_to tag, people_path(q: { by_tag_including: tag })
+          | &nbsp;

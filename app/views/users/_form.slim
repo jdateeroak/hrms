@@ -1,0 +1,57 @@
+= render 'shared/form_error', object: @user
+
+= simple_form_for @user, html: { class: 'form' } do |f|
+  .form-group
+    label.control-label
+      | Email
+      span.text-danger *
+    = f.input :email, label: false
+  .form-group
+    label.control-label Access to Users
+    = f.input :has_access_to_users, label: false
+  .form-group
+    label.control-label Access to Events
+    = f.input :has_access_to_events, label: false
+  .form-group
+    label.control-label Access to Finances
+    = f.input :has_access_to_finances, label: false
+  .form-group
+    label.control-label Access to Dayoffs
+    = f.input :has_access_to_dayoffs, label: false
+  .form-group
+    label.control-label Access to Expenses
+    = f.input :has_access_to_expenses, label: false
+  .form-group
+    label.control-label Notifications
+    = f.input :notifications_enabled, as: :boolean, label: false
+  .form-group
+    label.control-label 1-1 Meeting Notifications
+    = f.input :one_on_one_notifications_enabled, as: :boolean, label: false
+
+  .form-group
+    label.control-label
+      | Exclude Tags
+    select.form-control.js-select2-select multiple="multiple" name="user[hide_tags][]" class="form-control"
+      - @tags.each do |tag|
+        - if tag.name.in?(@user.hide_tags)
+          option value="#{tag}" selected="selected" #{tag}
+        - else
+          option value="#{tag}" #{tag}
+
+  .form-group
+    label.control-label
+      | Exclude Statuses
+    select.form-control.js-select2-select multiple="multiple" name="user[hide_statuses][]" class="form-control"
+      - PERSON_STATUS_COLORS.keys.each do |status|
+        - if status.in?(@user.hide_statuses)
+          option value="#{status}" selected="selected" #{status}
+        - else
+          option value="#{status}" #{status}
+
+  .form-group
+    label.control-label New Password
+    = f.input :password, label: false, input_html: { value: '' }
+  .form-bordered
+    .form-group.form-actions
+      .text-center
+        = f.button :submit, (@user.new_record? ? 'Create User' : 'Update User'), class: 'btn btn-success'

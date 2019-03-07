@@ -1,0 +1,34 @@
+= render 'shared/form_error', object: @project
+
+= simple_form_for @project, html: { class: 'form' } do |f|
+  .form-group
+    label.control-label
+      | Name
+      span.text-danger *
+    = f.input :name, label: false
+
+  .form-group
+    label.control-label Type
+    = f.input :status,
+              collection: Project::STATUSES,
+              label: false,
+              include_blank: false,
+              input_html: { class: 'select form-control' }
+
+  .form-group
+    label.control-label
+      | Description
+      span.text-danger *
+    = f.input :description, as: :text, placeholder: 'Describe customer, goals, etc', label: false, input_html: { rows: 3 }
+
+  .form-group
+    label.control-label
+      span.text-danger *
+      |  Start date:
+    = f.input :started_at, as: :string, include_blank: true, placeholder: 'dd-mm-yyyy', label: false,
+        input_html: { value: f.object.started_at&.strftime('%d-%m-%Y'), class: 'datepicker', data: { 'date-start-date' => 5.years.ago.strftime('%d-%m-%Y'), 'date-end-date' => 6.months.since.strftime('%d-%m-%Y') }, autocomplete: 'off' }
+
+  .form-bordered
+    .form-group.form-actions
+      .text-center
+        = f.button :submit, (@project.new_record? ? 'Create Project' : 'Update Project'), class: 'btn btn-success'

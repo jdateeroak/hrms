@@ -1,0 +1,14 @@
+h2.title
+  '  DASHBOARD
+  a.btn.btn-small href="#{destroy_user_session_path}" data-method='delete'
+    i.fa.fa-sign-out
+    |  Sign out
+br
+
+= render 'search'
+= render 'actions'
+= render 'quick_stats'
+= render 'reports'
+= render 'last_events'
+
+br

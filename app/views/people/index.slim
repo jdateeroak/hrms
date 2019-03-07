@@ -1,0 +1,81 @@
+h2.title
+  | PEOPLE &nbsp;
+  a.btn.btn-default.btn-pill href="/people/new"
+    i.fa.fa-plus
+    | &nbsp; Add person
+
+.search-form
+  form.form action="#{people_path}" method="GET"
+    .row
+      .col-md-3
+        .form-group
+          label.control-label
+            | Search by name
+          input.form-control type="text" name="q[name_cont]" placeholder="Name" value="#{params[:q] && params[:q][:name_cont]}"
+      .col-md-3
+        .form-group
+          label.control-label
+            | HR status
+          select.select.form-control name="q[status_eq]"
+            option value="" not selected
+            - PERSON_STATUS_COLORS.each_pair do |status, color|
+              - if params.dig(:q, :status_eq) == status
+                option selected="selected" value="#{status}" style="background-color: #{color};" #{status}
+              - else
+                option value="#{status}" style="background-color: #{color};" #{status}
+      .col-md-3
+        .form-group
+          label.control-label
+            | Tags
+          select.form-control.js-select2-select multiple="multiple" name="q[by_tag_including][]" class="form-control"
+            - @tags.each do |tag|
+              - if params.dig(:q, :by_tag_including) && tag.name.in?(Array.wrap(params[:q][:by_tag_including]))
+                option value="#{tag}" selected="selected" #{tag}
+              - else
+                option value="#{tag}" #{tag}
+    .row
+      .col-md-3
+        .form-group
+          label.control-label
+            | Technology
+          select.select.form-control name="q[primary_tech_eq]"
+            option value="" not selected
+            - Person::PRIMARY_TECHS.each do |item|
+              - if params.dig(:q, :primary_tech_eq) == item
+                option selected="selected" value="#{item}" #{item}
+              - else
+                option value="#{item}" #{item}
+                
+      .col-md-3
+        .form-group
+          label.control-label
+            | Exclude tags
+          select.form-control.js-select2-select multiple="multiple" name="q[by_tag_excluding][]" class="form-control"
+            - @tags.each do |tag|
+              - if (params.dig(:q, :by_tag_excluding) && tag.name.in?(Array.wrap(params[:q][:by_tag_excluding]))) || (params.dig(:q, :by_tag_excluding).blank? && current_user.hide_tags.include?(tag.name))
+                option value="#{tag.name}" selected="selected" #{tag.name}
+              - else
+                option value="#{tag.name}" #{tag.name}
+      .col-md-3
+        .form-group
+          label.control-label
+            | Exclude statuses
+          select.form-control.js-select2-select multiple="multiple" name="q[status_not_in][]" class="form-control"
+            - PERSON_STATUS_COLORS.keys.each do |status|
+              - if (params.dig(:q, :status_not_in) && status.in?(Array.wrap(params[:q][:status_not_in]))) || (params.dig(:q, :status_not_in).blank? && current_user.hide_statuses.include?(status))
+                option value="#{status}" selected="selected" #{status}
+              - else
+                option value="#{status}" #{status}
+
+    .row
+      .col-md-2
+        .form-group
+          label.control-label
+            | &nbsp;
+          button.form-control.btn.btn-small.btn-primary type="submit"
+            i.fa.fa-search
+            | &nbsp; Search
+
+= render 'people/table_header'
+
+= render 'shared/load_button', collection: @people

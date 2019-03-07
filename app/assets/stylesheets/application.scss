@@ -1,0 +1,17 @@
+/*
+ *= require select2
+ *= require select2-bootstrap
+ *= require jquery-ui/autocomplete
+ */
+
+@import "bootstrap-sprockets";
+@import "bootstrap";
+@import "bootstrap-datepicker";
+@import "font-awesome";
+@import "typography";
+@import "pages/login";
+@import "pages/dashboard";
+@import "elements";
+@import "layouts";
+@import "tables";
+@import "responsive";

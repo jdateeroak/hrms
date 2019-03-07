@@ -1,0 +1,82 @@
+h2.title Current Employees expenses
+br
+
+table.table.pretty-table
+  thead
+    th #
+    th Name
+    th Total
+    th Period Info
+    th Period Total
+    th Period Remainig
+    - Expense::TYPES.each do |type|    
+      th = type
+  tbody
+    - @people.each_with_index do |record, index|
+      tr
+        td
+          = index + 1
+        td width="200"
+          = link_to record.name, person_path(record)
+          '
+          a href="#{edit_person_path(record)}"
+            i.fa.fa-pencil
+          - if record.start_date.present?
+            br
+            = record.start_date.strftime(t(:datetime_full)).gsub('00:00, ', '')
+            br
+            - if record.start_date.present? && record.start_date > Time.zone.now
+              'not started
+            - else
+              sub = "#{months_worked(record) > 0 ? pluralize(months_worked(record), 'month') : 'just started'}"
+        td
+          - if record.start_date.present? && record.start_date <= Time.zone.now
+            - total_expenses = record.expenses.sum(:amount)
+            - if total_expenses > 0 && total_expenses >= (ENV['EXPENSES_LIMIT_PER_YEAR'].to_i / 12) * months_worked(record)
+              span style="color: red"
+                strong
+                  = total_expenses
+            - else
+              = total_expenses
+
+        - if record.start_date.present? && record.start_date <= Time.zone.now
+          - expenses_stats_per_year(record.id).tap do |stats|
+            - stats[stats.keys.last].tap do |stat|
+              - if stat.present?
+                td
+                  = stat['period_start_date'].gsub(/\s/, '&nbsp;').html_safe
+                  br
+                  | to
+                  br
+                  = stat['period_end_date'].gsub(/\s/, '&nbsp;').html_safe
+                  br
+                  = "#{(stat['year'] + 1).to_i.ordinalize} year"
+                td
+                  - if stat['total_expenses'] >= ENV['EXPENSES_LIMIT_PER_YEAR'].to_i
+                    span style="color: red"
+                      strong
+                        = stat['total_expenses']
+                  - else
+                    = stat['total_expenses']
+                td
+                  - if stat['remaining_expenses'] < ENV['EXPENSES_LIMIT_PER_YEAR'].to_i / 12
+                    span style="color: red"
+                      strong
+                        = stat['remaining_expenses']
+                  - elsif stat['remaining_expenses'] == ENV['EXPENSES_LIMIT_PER_YEAR'].to_i
+                    span style="color: green"
+                      strong
+                        = stat['remaining_expenses']
+                  - else
+                    = stat['remaining_expenses']
+                - Expense::TYPES.each do |type|
+                  td
+                    = stat['total_expenses_by_type'][type]
+
+
+
+
+
+
+
+

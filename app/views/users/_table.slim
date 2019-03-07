@@ -1,0 +1,27 @@
+- if @users.empty?
+  span class='js-page-last'
+
+- @users.each_with_index do |record, index|
+  tr class=('js-page-last' if (index == @users.size - 1) && last_page?(@users))
+    td
+      = link_to record.email, user_path(record)
+      - if current_user.email == record.email
+        | &nbsp;
+        span.label.label-warning
+          | YOU
+    td = record.notifications_enabled? ? 'yes' : '-'
+    td = record.has_access_to_users? ? 'yes' : '-'
+    td = record.has_access_to_events? ? 'yes' : '-'
+    td = record.has_access_to_finances? ? 'yes' : '-'
+    td = record.has_access_to_dayoffs? ? 'yes' : '-'
+    td = record.has_access_to_expenses? ? 'yes' : '-'
+    td = record.one_on_one_notifications_enabled? ? 'yes' : '-'
+    td = record.created_at.strftime(t(:datetime_full)).gsub('00:00, ', '')
+    td
+      = record.updated_at.strftime(t(:datetime_full))
+      br
+      = record.updated_by&.email&.split('@')&.first
+    td
+      a href="#{edit_user_path(record)}" class="btn btn-sm btn-info btn-pill"
+        i.fa.fa-pencil
+        |  Edit

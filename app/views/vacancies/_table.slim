@@ -1,0 +1,23 @@
+- if @vacancies.empty?
+  span class='js-page-last'
+
+- @vacancies.each_with_index do |record, index|
+  tr class=('js-page-last' if (index == @vacancies.size - 1) && last_page?(@vacancies))
+    td = record.status
+    td = link_to record.project, vacancy_path(record)
+    td = link_to record.role, vacancy_path(record)
+    td
+      - if record.tag
+        = link_to record.tag, people_path(q: { by_tag_including: record.tag })
+      - else
+        | n/a
+    td = render 'reports/vacancy_candidates_by_status', vacancy: record
+    td = record.created_at.strftime(t(:datetime_full)).gsub('00:00, ', '')
+    td
+      a.btn.btn-sm.btn-info.btn-pill href="#{edit_vacancy_path(record)}"
+        i.fa.fa-pencil
+        | &nbsp; Edit
+      | &nbsp;
+      a.btn.btn-sm.btn-info.btn-pill href="#{funnel_reports_path(funnel: { vacancy_id: record.id, start_date: record.created_at.strftime('%d-%m-%Y'), finish_date: Time.zone.now.strftime('%d-%m-%Y') })}"
+        i.fa.fa-pencil
+        | &nbsp; Funnel

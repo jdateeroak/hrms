@@ -1,0 +1,79 @@
+.js-edit-form-container style="display:none;"
+  h2.title
+    | Edit #{@vacancy.project} #{@vacancy.role}
+    | &nbsp;
+    a.btn.btn-default href="#{vacancy_path(@vacancy)}" Back
+  = render 'vacancies/form'
+
+.js-show-container
+  h2.title
+    = "#{@vacancy.project} #{@vacancy.role}"
+    | &nbsp;
+    a.btn.btn-default.js-show-edit-form href="#" Edit
+    /| &nbsp;
+    /a.btn.btn-info href="#{vacancy_path(@vacancy)}.xlsx" Export to XLSX
+  p
+    | Status:&nbsp;
+    = @vacancy.status
+  p
+    | Project:&nbsp;
+    = @vacancy.project
+  p
+    | Role:&nbsp;
+    = @vacancy.role
+  p
+    | Tag:&nbsp;
+    = link_to @vacancy.tag, people_path(q: { by_tag_including: @vacancy.tag })
+  p
+    | Description:&nbsp;
+    = with_newlines(@vacancy.description)
+  p
+    | Date:&nbsp;
+    = @vacancy.created_at.strftime(t(:datetime_full)).gsub('00:00, ', '')
+  p
+    | By status:
+    br
+    br
+    = render 'reports/vacancy_candidates_by_status', vacancy: @vacancy
+
+.search-form
+  form.form action="#{vacancy_path(@vacancy)}" method="GET"
+    .row
+      .col-md-3
+        .form-group
+          label.control-label
+            | Search by name
+          input.form-control type="text" name="q[name_cont]" placeholder="Name" value="#{params[:q] && params[:q][:name_cont]}"
+      .col-md-3
+        .form-group
+          label.control-label
+            | HR status
+          select.select.form-control name="q[status_eq]"
+            option value="" not selected
+            - PERSON_STATUS_COLORS.each_pair do |status, color|
+              - if params.dig(:q, :status_eq) == status
+                option selected="selected" value="#{status}" style="background-color: #{color};" #{status}
+              - else
+                option value="#{status}" style="background-color: #{color};" #{status}
+      .col-md-3
+        .form-group
+          label.control-label
+            | Tags
+          select.form-control.js-select2-select multiple="multiple" name="q[by_tag_including][]" class="form-control"
+            - @tags.each do |tag|
+              - if params.dig(:q, :by_tag_including) && tag.name.in?(Array.wrap(params[:q][:by_tag_including]))
+                option value="#{tag}" selected="selected" #{tag}
+              - else
+                option value="#{tag}" #{tag}
+      .col-md-2
+        .form-group
+          label.control-label
+            | &nbsp;
+          button.form-control.btn.btn-small.btn-primary type="submit"
+            i.fa.fa-search
+            | &nbsp; Search
+  h4
+    | Candidates:
+
+  = render 'people/table_header'
+

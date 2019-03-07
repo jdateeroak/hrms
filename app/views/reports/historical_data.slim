@@ -1,0 +1,22 @@
+h2.title Historical data
+
+span
+  | Records created daily
+
+table.table.pretty-table
+  thead
+    th Day
+    - HistoricalDataCollector::KLASSES.each do |klass|
+      th = klass
+  tbody
+    - @data.reverse_each do |item|
+      tr
+        td
+          = item.first
+        - item.last.values.each do |count|
+          td
+            = count != '0' ? count : ''
+  thead
+    th Day
+    - HistoricalDataCollector::KLASSES.each do |klass|
+      th = klass

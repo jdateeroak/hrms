@@ -1,0 +1,21 @@
+h2.title
+  | ATTACHMENTS &nbsp;
+  a.btn.btn-default.btn-pill href="/attachments/new"
+    i.fa.fa-plus
+    | &nbsp; Add attachment
+
+
+table.table.pretty-table
+  thead
+    th = sort_link @q, :person, ['person_name'], 'Person'
+    th = sort_link @q, :name
+    th = sort_link @q, :description
+    th File
+    th = sort_link @q, :file_size, 'Size'
+    th = sort_link @q, :created_at, 'Created'
+    th = sort_link @q, :updated_at, 'Updated'
+    th Actions
+  tbody.js-loadable-list
+    = render 'table'
+
+= render 'shared/load_button', collection: @attachments
